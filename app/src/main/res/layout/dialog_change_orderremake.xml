@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.android.percent.support.PercentLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:background="@drawable/dialog_background_normal">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="修改备注："
+        android:textSize="@dimen/text_size_bigger"
+        android:textColor="@color/details_text"
+        />
+    <EditText
+        android:id="@+id/ed_dialog_orderRemake"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="仅用于重新填写此单的下单'备注信息'"
+        android:lines="5"
+        android:textSize="@dimen/text_size_normal"
+        android:gravity="start"
+        />
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_widthPercent="75%w">
+        <Button
+            android:id="@+id/bt_dialog_cancel"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:text="取\t消"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:background="@drawable/button_background_unpermit_selector"
+            />
+        <Button
+            android:id="@+id/bt_dialog_confirm"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
+            android:text="提\t交"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:background="@drawable/button_background_normal_selector"
+            />
+
+    </LinearLayout>
+</com.zhy.android.percent.support.PercentLinearLayout>

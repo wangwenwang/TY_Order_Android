@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    >
+    <View
+        android:id="@+id/view_search_bg"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@drawable/makeorder_fragment_search_edittext_bg"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
+
+
+    <EditText
+        android:id="@+id/ed_product_style"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="55dp"
+        android:paddingLeft="5dp"
+        android:hint="按产品规格关键字搜索"
+        android:focusableInTouchMode="true"
+        android:textSize="14sp"
+        android:textColor="@color/text_color_normal"
+        android:gravity="center_vertical"
+        android:background="@null"
+        />
+    <ImageView
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/ic_search"
+        android:layout_alignRight="@id/view_search_bg"
+        />
+</RelativeLayout>
