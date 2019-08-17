@@ -8,6 +8,7 @@ import android.os.Process;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.kaidongyuan.app.tyorder.bean.Business;
+import com.kaidongyuan.app.tyorder.bean.OrderTmsWay;
 import com.kaidongyuan.app.tyorder.bean.User;
 import com.kaidongyuan.app.tyorder.util.ExceptionUtil;
 import com.kaidongyuan.app.tyorder.util.logger.AndroidLogTool;
@@ -76,6 +77,11 @@ public class MyApplication extends Application {
      */
     private static Resources mRes;
 
+    /**
+     * 订单类型（运输方式）实体类
+     */
+    private List<OrderTmsWay> orderTmsWayList;
+
 
     @Override
     public void onCreate() {
@@ -115,6 +121,7 @@ public class MyApplication extends Application {
             MyApplication.instance = this;
             MyApplication.applicationContext = this;
             this.mActivityManagerList = new ArrayList<>();
+            this.orderTmsWayList = new ArrayList<>();
         } catch (Exception e) {
             ExceptionUtil.handlerException(e);
         }
@@ -284,6 +291,29 @@ public class MyApplication extends Application {
             mRes = MyApplication.getAppContext().getResources();
         }
         return mRes;
+    }
+
+    /**
+     * 设置订单类型（运输方式）实体类
+     *
+     * @param orderTmsWays 订单类型（运输方式）集合
+     */
+    public void setOrderTmsWayList(List<OrderTmsWay> orderTmsWays) {
+
+        orderTmsWayList.clear();
+        for (int i = 0; i < orderTmsWays.size(); i++) {
+            OrderTmsWay m = orderTmsWays.get(i);
+            orderTmsWayList.add(m);
+        }
+    }
+
+    /**
+     * 获取订单类型（运输方式）集合
+     *
+     * @return OrderTmsWay 集合
+     */
+    public List<OrderTmsWay> getOrderTmsWayList() {
+        return orderTmsWayList;
     }
 
 }

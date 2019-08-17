@@ -321,7 +321,7 @@ public class OrderConfirmActivityBiz {
      * @param remark 用户填写的备注信息
      */
     public void setConfirmData(List<PromotionDetail> returnGiftData, List<Product> choicedProducts,double tempTotalQTY,
-                               Date date, String remark,String reference01,String reference02) {
+                               Date date, String remark,String reference01,String reference02,long reference03) {
         try {
             PromotionOrder order = getOrder();
             List<PromotionDetail> products = getProducts();
@@ -368,6 +368,7 @@ public class OrderConfirmActivityBiz {
             order.CONSIGNEE_REMARK = remark;
             order.REFERENCE01=reference01;
             order.REFERENCE02=reference02;
+            order.BUSINESS_TYPE=reference03;
         } catch (Exception e) {
             ExceptionUtil.handlerException(e);
         }

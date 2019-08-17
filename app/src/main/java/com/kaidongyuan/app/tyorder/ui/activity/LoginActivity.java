@@ -310,6 +310,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 mBiz.writeBusinessToApplicationAndSharedPreference(mBusinessList.get(position));
                 mBusinessDialog.dismiss();
                 loginSuccess();
+                mBiz.GetToBusiness_Type(MyApplication.getInstance().getBusiness().getBUSINESS_IDX());
             } catch (Exception e) {
                 ExceptionUtil.handlerException(e);
             }

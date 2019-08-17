@@ -173,7 +173,7 @@ public class URLCostant {
     /**
      * 最终提交订单
      */
-    public static final String CONFIRM_ORDER = BASE_URL + "ConfirmOrder";
+    public static final String CONFIRM_ORDER = BASE_URL + "ConfirmOrderTest";
 
     /**
      * 获取赠品品类详细信息
@@ -239,6 +239,10 @@ public class URLCostant {
      * 20171218 修改未审核订单的下单备注信息
      */
     public static final String UpdateRemark=BASE_URL+"UpdateRemark";
+    /**
+     * 20190816 补20180907 获取订单类型
+     */
+    public static final String GetToBusiness_Type = BASE_URL + "GetToBusiness_Type";
 
 }
 

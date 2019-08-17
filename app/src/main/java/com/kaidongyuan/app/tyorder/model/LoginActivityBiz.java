@@ -2,6 +2,7 @@ package com.kaidongyuan.app.tyorder.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.EditText;
 
 import com.alibaba.fastjson.JSON;
@@ -16,6 +17,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.kaidongyuan.app.tyorder.R;
 import com.kaidongyuan.app.tyorder.app.MyApplication;
 import com.kaidongyuan.app.tyorder.bean.Business;
+import com.kaidongyuan.app.tyorder.bean.OrderTmsWay;
 import com.kaidongyuan.app.tyorder.bean.User;
 import com.kaidongyuan.app.tyorder.constants.SharedPreferenceConstants;
 import com.kaidongyuan.app.tyorder.constants.URLCostant;
@@ -210,6 +212,7 @@ public class LoginActivityBiz {
             }else if (businessList.size() == 1) {
                 writeBusinessToApplicationAndSharedPreference(businessList.get(0));
                 mActivity.loginSuccess();
+                this.GetToBusiness_Type(MyApplication.getInstance().getBusiness().getBUSINESS_IDX());
             } else {
                 mActivity.showBusinessDialog(businessList);
             }
@@ -276,6 +279,58 @@ public class LoginActivityBiz {
         }catch (Exception e) {
             ExceptionUtil.handlerException(e);
             return "";
+        }
+    }
+
+
+    /**
+     * 获取订单类型
+     *
+     * @param BUSINESS_IDX 业务代码ID
+     * @return 是否成功发送请求
+     */
+    public boolean GetToBusiness_Type(final String BUSINESS_IDX) {
+        try {
+            StringRequest request = new StringRequest(Request.Method.POST, URLCostant.GetToBusiness_Type, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                    JSONObject object = JSON.parseObject(response);
+                    JSONObject resultObj = JSON.parseObject(object.getString("result"));
+                    List<OrderTmsWay> orderTmsWays = JSON.parseArray(resultObj.getString("List"), OrderTmsWay.class);
+                    if(orderTmsWays != null) {
+                        MyApplication.getInstance().setOrderTmsWayList(orderTmsWays);
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    if (NetworkUtil.isNetworkAvailable()) {
+                        mActivity.loginError("获取订单类型失败!");
+                    } else {
+                        mActivity.loginError("请检查网络是否正常连接！");
+                    }
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("BUSINESS_IDX", BUSINESS_IDX);
+                    params.put("strLicense", "");
+                    return params;
+                }
+            };
+            request.setTag(mTagLogin);
+            request.setRetryPolicy(new DefaultRetryPolicy(
+                    DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            HttpUtil.getRequestQueue().add(request);
+            return true;
+        }catch (Exception e) {
+            ExceptionUtil.handlerException(e);
+            return false;
         }
     }
 }

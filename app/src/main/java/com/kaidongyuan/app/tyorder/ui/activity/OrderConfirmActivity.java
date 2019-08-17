@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -26,10 +27,12 @@ import com.kaidongyuan.app.tyorder.R;
 import com.kaidongyuan.app.tyorder.adapter.BusinessAdapter;
 import com.kaidongyuan.app.tyorder.adapter.OrderProductDetailAdapter;
 import com.kaidongyuan.app.tyorder.adapter.OrderPromotionAdapter;
+import com.kaidongyuan.app.tyorder.adapter.OrderTmsWayAdapter;
 import com.kaidongyuan.app.tyorder.adapter.TmsTypeAdapter;
 import com.kaidongyuan.app.tyorder.app.MyApplication;
 import com.kaidongyuan.app.tyorder.bean.Business;
 import com.kaidongyuan.app.tyorder.bean.OrderGift;
+import com.kaidongyuan.app.tyorder.bean.OrderTmsWay;
 import com.kaidongyuan.app.tyorder.bean.Product;
 import com.kaidongyuan.app.tyorder.bean.PromotionDetail;
 import com.kaidongyuan.app.tyorder.bean.PromotionOrder;
@@ -110,6 +113,10 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
      */
     private TextView mTextViewTmsType;
     /**
+     *
+     */
+    private TextView mTextViewOrderTmsWay;
+    /**
      * 填写部门
      */
     private EditText ed_REFERENCE01;
@@ -174,6 +181,17 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
      */
     private ListView mListViewTmsTypes;
     private TmsTypeAdapter mTmsTypeAdapter;
+    /**
+     * 订单类型 Dialog
+     */
+    private Dialog mOrderWaysDialog;
+    /**
+     * 订单类型 ListView
+     */
+    private ListView mListViewOrderWays;
+    private OrderTmsWayAdapter mOrderWaysAdapter;
+    private List<OrderTmsWay> orderTmsWayList;
+    private int orderTmsWayListIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,6 +221,10 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
                 mTmsTypesDialog.dismiss();
             }
             mTmsTypesDialog = null;
+            if (mOrderWaysDialog!=null && mOrderWaysDialog.isShowing()) {
+                mOrderWaysDialog.dismiss();
+            }
+            mOrderWaysDialog = null;
             mLoadingDialog = null;
             mImageViewGoBack = null;
             mChoicedProducts = null;
@@ -214,6 +236,7 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
             mTextViewPromotionPrice = null;
             mTextViewPayPrice = null;
             mTextViewTmsType=null;
+            mTextViewOrderTmsWay = null;
             ed_REFERENCE01=null;
             mTextViewNoPromotion = null;
             mListViewProduct = null;
@@ -236,6 +259,8 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
             mBiz = new OrderConfirmActivityBiz(this);
             Intent intent = getIntent();
             mChoicedProducts = intent.getParcelableArrayListExtra(EXTRAConstants.CHOICED_PRODUCT_LIST);
+            orderTmsWayList = (MyApplication.getInstance().getOrderTmsWayList() == null) ? new ArrayList<OrderTmsWay>() : MyApplication.getInstance().getOrderTmsWayList();
+            orderTmsWayListIndex = -1;
         } catch (Exception e) {
             ExceptionUtil.handlerException(e);
         }
@@ -265,6 +290,7 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
             mTextViewPromotionPrice = (TextView) this.findViewById(R.id.tv_promotion_price);
             mTextViewPayPrice = (TextView) this.findViewById(R.id.tv_pay_price);
             mTextViewTmsType= (TextView) this.findViewById(R.id.tv_tms_type);
+            mTextViewOrderTmsWay= (TextView) this.findViewById(R.id.tv_order_tms_way);
             ed_REFERENCE01= (EditText) this.findViewById(R.id.ed_REFERENCE01);
             mTextViewNoPromotion = (TextView) this.findViewById(R.id.tv_no_promotion);
             mListViewProduct = (MyListView) this.findViewById(R.id.lv_product);
@@ -326,6 +352,7 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
                     notifyDataChange();
                 }
             });
+            mTextViewOrderTmsWay.setOnClickListener(this);
         } catch (Exception e) {
             ExceptionUtil.handlerException(e);
         }
@@ -383,6 +410,8 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
                             .setMinDate(new Date())
                             .build()
                             .show();
+                case R.id.tv_order_tms_way:
+                    showOrderTmsWaysDialog();
                     break;
             }
         } catch (Exception e) {
@@ -441,6 +470,39 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
             ExceptionUtil.handlerException(e);
         }
     }
+
+    private void showOrderTmsWaysDialog() {
+        try {
+            if (mOrderWaysDialog == null) {
+                createOrderTmsWaysDialog();
+            } else {
+                mOrderWaysDialog.show();
+                mOrderWaysAdapter.notifyChange(orderTmsWayList);
+            }
+        } catch (Exception e) {
+            ExceptionUtil.handlerException(e);
+        }
+    }
+    /**
+     * 创建订单类型的 Dialog
+     */
+    private void createOrderTmsWaysDialog() {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            mOrderWaysDialog = builder.create();
+            mOrderWaysDialog.setCanceledOnTouchOutside(false);
+            mOrderWaysDialog.show();
+            Window window = mOrderWaysDialog.getWindow();
+            window.setContentView(R.layout.dialog_tmstypes_choice);
+            mListViewOrderWays = (ListView) window.findViewById(R.id.listView_business);
+            mListViewOrderWays.setOnItemClickListener(new InnerOnItemClickListener1());
+            mOrderWaysAdapter = new OrderTmsWayAdapter(orderTmsWayList, this);
+            mListViewOrderWays.setAdapter(mOrderWaysAdapter);
+        } catch (Exception e) {
+            ExceptionUtil.handlerException(e);
+        }
+    }
+
     /**
      * 获取促销信息成功时回调的方法
      */
@@ -513,6 +575,10 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
             // 不需要显示赠品价格
             mTextViewPayPrice.setText(String.valueOf(OrderUtil.getPaymentType(order.PAYMENT_TYPE)));
             mTextViewTmsType.setText("送货");
+            if(orderTmsWayList.size() > 0) {
+                mTextViewOrderTmsWay.setText(orderTmsWayList.get(0).getBUSINESS_IDX());
+                orderTmsWayListIndex = 0;
+            }
             if (order.MJ_REMARK == null || order.MJ_REMARK.equals("") || order.MJ_REMARK.equals("+|+")) {
                 mTextViewPromotionRemark.setVisibility(View.GONE);
                 this.findViewById(R.id.textview_promotion_remark_head).setVisibility(View.GONE);
@@ -572,7 +638,8 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
             String remark = mEditTextMark.getText().toString().trim();
             String REFERENCE01=ed_REFERENCE01.getText().toString().trim();//20171020 填写部门
             String REFERENCE02=mTextViewTmsType.getText().toString().trim();//20171218 所选发运方式
-            mBiz.setConfirmData(mReturnGiftData, mChoicedProducts, mTempTotalQTY, mDate, remark,REFERENCE01,REFERENCE02);
+            long REFERENCE03=Long.parseLong(orderTmsWayList.get(orderTmsWayListIndex).getIDX());//20190817 所选订单类型
+            mBiz.setConfirmData(mReturnGiftData, mChoicedProducts, mTempTotalQTY, mDate, remark,REFERENCE01,REFERENCE02,REFERENCE03);
             if (mBiz.confirm()) {
                 showLoadingDialog();
             } else {
@@ -693,6 +760,22 @@ public class OrderConfirmActivity extends BaseFragmentActivity implements View.O
             try {
                 mTmsTypesDialog.dismiss();
                 mTextViewTmsType.setText(mBiz.mTmsTypes.get(position).getItem_name());
+            } catch (Exception e) {
+                ExceptionUtil.handlerException(e);
+            }
+        }
+    }
+
+    /**
+     * 用户业务列表 Item 点击监听实现类
+     */
+    private class InnerOnItemClickListener1 implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            try {
+                mOrderWaysDialog.dismiss();
+                mTextViewOrderTmsWay.setText(orderTmsWayList.get(position).getBUSINESS_IDX());
+                orderTmsWayListIndex = position;
             } catch (Exception e) {
                 ExceptionUtil.handlerException(e);
             }
