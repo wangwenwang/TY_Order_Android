@@ -8,7 +8,7 @@ android {
         multiDexEnabled true
         applicationId "com.kaidongyuan.app.tyorder"
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 26
         versionCode 4
         versionName "2.2"
     }
